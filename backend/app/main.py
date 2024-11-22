@@ -1,4 +1,6 @@
 from fastapi import Depends, FastAPI, UploadFile
+from ..functions.monitor_video_file import monitor_video_file
+import os
 app = FastAPI()
 
 
@@ -12,6 +14,11 @@ async def read_root():
 async def upload_file(file: UploadFile):
     print(file.filename)
     contents = await file.read()
-    with open(file.filename, "wb") as f:
+    with open(f"uploads/${file.filename}", "wb") as f:
         f.write(contents)
-    return {"filename": file.filename}
+        monitor_video_file(f"uploads/${file.filename}", "model")
+        print("File saved")
+    os.remove(f"uploads/${file.filename}")
+    return {
+        "message": "File uploaded successfully"
+    }
