@@ -1,24 +1,18 @@
-from functools import lru_cache
-from typing import Annotated, Union
-
-from fastapi import Depends, FastAPI
-from ..config import Settings
+from fastapi import Depends, FastAPI, UploadFile
 app = FastAPI()
 
-from ..functions.twilio_methods import send_emergency_sms
+from ..functions.twilio import send_emergency_sms, make_emergency_call
 
 
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {
+        "message": "Welcome to the Safegaurd-AI API!"
+    }
 
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.get("/twilio")
-async def read_twilio_settings():
-    response = send_emergency_sms("+918475864044")
-    return {"Twilio Credentials Verified": response}
+@app.post("/upload")
+async def upload_file(file:UploadFile):
+    print(file.filename)
+    print(file.file.read())
+    return {"filename": file.file}
