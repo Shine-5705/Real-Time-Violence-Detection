@@ -1,9 +1,6 @@
 from fastapi import Depends, FastAPI, UploadFile
 app = FastAPI()
 
-from ..functions.twilio import send_emergency_sms, make_emergency_call
-
-
 
 @app.get("/")
 async def read_root():
@@ -12,7 +9,9 @@ async def read_root():
     }
 
 @app.post("/upload")
-async def upload_file(file:UploadFile):
+async def upload_file(file: UploadFile):
     print(file.filename)
-    print(file.file.read())
-    return {"filename": file.file}
+    contents = await file.read()
+    with open(file.filename, "wb") as f:
+        f.write(contents)
+    return {"filename": file.filename}
